@@ -52,7 +52,7 @@
 #           
 #           ETAhat^(1) = SUM_running to q where k=1 ( BETAhat_k^(1) * y_k)
 #
-#         and normalize XIhat^(1) such that,
+#         and compare XIhat^(1) such that,
 #           
 #           Compare XIhat and XI, and ETAhat and ETA. If XIhat and ETAhat are not equal to XI and ETA
 #           (within some chosen convergence criteria), repeat the process for the next values of XIhat
@@ -80,25 +80,31 @@ XYMA = matrix( c(-0.003, 0.265, 0.404, 0.723,
                  0.710, 0.440, 0.089,-0.037), nrow = 4, ncol = 4, byrow = TRUE)
 
 #INPUT DATA Y'Y;
-YYMA = matrix( c(-0.003, 0.265, 0.404, 0.723,
-                 0.062, 0.203, 0.709, 0.461,
-                 0.422, 0.714, -0.142, -0.012,
-                 0.710, 0.440, 0.089,-0.037), nrow = 4, ncol = 4, byrow = TRUE)
+YYMA = matrix( c(1.000, 0.400, 0.200, 0.000,
+                 0.400, 1.000, 0.000, 0.200,
+                 0.200, 0.000, 1.000, 0.400,
+                 0.000, 0.200, 0.400, 1.000), nrow = 4, ncol = 4, byrow = TRUE)
 
-# INITIAL VALUES OF;ALPH, BETA, & CRT;
-ALPH = matrix( c(1.000, 1.000, 1.000, 1.000), nrow = 4, ncol = 1, byrow = TRUE)
-BETA = matrix( c(1.000, 1.000, 1.000, 1.000), nrow = 4, ncol = 1, byrow = TRUE)
+p <- ncol(XXMA)
+q <- ncol(YYMA)
+
+# an x-weight column vector of p elements
+ALPH = matrix( rep(1, p), nrow = p, ncol = 1, byrow = TRUE)
+               
+# an y-weight column vector of q elements
+BETA = matrix( rep(1, q), nrow = q, ncol = 1, byrow = TRUE)
+
 CRT = matrix( c(1.000), nrow = 1, ncol = 1, byrow = TRUE)
 
 
-ETA = XYMA %*% BETA %*% (solve(sqrt(t(BETA) %*% XYMA %*% BETA)))
+ETA = XYMA %*% BETA %*% (solve(sqrt(t(BETA) %*% YYMA %*% BETA)))
 
 ETA
 
 #START Partial least square regression
 while(CRT > 0.0000000001){
   
-  ETA = XYMA %*% BETA %*% (solve(sqrt(t(BETA) %*% XYMA %*% BETA)))
+  ETA = XYMA %*% BETA %*% (solve(sqrt(t(BETA) %*% YYMA %*% BETA)))
   
   AP = solve(XXMA) %*% ETA;
   AQ = AP %*% solve(sqrt(t(AP) %*% XXMA %*% AP));
@@ -114,5 +120,28 @@ while(CRT > 0.0000000001){
   
 }
 
+#ALPH = X-WEIGHTS
+ALPH
+
+#BETA = Y-CROSSLOADINGS
 BETA
-CRT
+
+#XLDG = X-LOADINGS
+XLDG = XXMA %*% ALPH
+XLDG
+
+#YWGT = Y-WEIGHTS
+YWGT = BETA %*% solve(sqrt(t(BETA) %*% YYMA %*% BETA))
+YWGT
+
+#YLDG = Y-LOADINGS
+YLDG = YYMA %*% YWGT
+YLDG
+
+#PATH = PATH COEFFICIENT / correlation between XI and ETA
+PATH = t(ALPH) %*% XYMA %*% YWGT;
+PATH
+
+#REDN = REDUNDANCY INDEX: redundancy of y variables
+REDN = (sum(BETA^2))/4
+REDN
