@@ -3,7 +3,7 @@
 #                           Construction site2                                            ####
 #***************************************************************************************#
 
-###DO RDA converge ALPH and ETA##########
+###DO RDA converge XI and ETA##########
 
 
 lm2_RDA <- function(X,Y) {
@@ -36,7 +36,7 @@ lm2_RDA <- function(X,Y) {
   
   #LOOP
   for(i in 1:100) {
-    #           and ^(i) denotes the ith iteration
+    # and ^(i) denotes the ith iteration
     
     #BETA
     
@@ -45,13 +45,11 @@ lm2_RDA <- function(X,Y) {
     #ETA
     #XI
     
-    #         For the value of ahat^(0) (ALPHA) and hence XIhat^(0), regress ETAhat^(0) on X jointly to get ALPH,
-    
+    # For the value of ahat^(0) (ALPHA) and hence XIhat^(0), regress ETAhat^(0) on X jointly to get ALPH,
     
     ALPH = lm(ETA ~ 0+Xcr)
     
-    ALPH = ALPH$coefficients
-    ALPH = as.matrix(ALPH)
+    ALPH = as.matrix(ALPH$coefficients)
     
     #ALPH
     
@@ -66,7 +64,7 @@ lm2_RDA <- function(X,Y) {
     #           that is it variance is 1
     XI_0 = scale(XI_0)
     
-    #is t(ahat^(0)) t(X)*X*ahat^(0) = 1 ?
+    #is t(ahat^(0)) t(X)*X*ahat^(0) = 1 /normalized?
     t(ALPH) %*%  t(Xcr) %*% Xcr %*% ALPH
     
     #normalize ALPH
@@ -171,12 +169,14 @@ lm2results <- lm2_RDA(X,Y)
 lm2results$ALPH
 lm2results$BETA
 
-f <- lm(results$ALPH ~lm2results$ALPH)
+lm2results$XLDG_X_LOADINGS_site_scores
 
+f <- lm(results$ALPH ~lm2results$ALPH)
+f
 
 library(vegan)
 
-#veganRDA <- rda(Y,X)
+veganRDA <- rda(Y,X)
 
-#names(veganRDA)
-#summary(veganRDA)
+veganRDA$CCA$biplot
+summary(veganRDA)

@@ -102,7 +102,7 @@ ETA = XYMA %*% BETA %*% (solve(sqrt(t(BETA) %*% YYMA %*% BETA)))
 ETA
 
 #START Partial least square regression
-while(CRT > 0.0000000001){
+while(CRT > 0.000000000001){
   
   ETA = XYMA %*% BETA %*% (solve(sqrt(t(BETA) %*% YYMA %*% BETA)))
   
@@ -145,3 +145,6 @@ PATH
 #REDN = REDUNDANCY INDEX: redundancy of y variables
 REDN = (sum(BETA^2))/4
 REDN
+
+t(BETA) %*% t(XYMA) %*% solve(XXMA) %*% XYMA %*% BETA
+PATH
